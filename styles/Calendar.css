@@ -1,0 +1,156 @@
+/* styles/Calendar.css */
+.calendar {
+  font-size: 8px;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+  padding: 20px;
+  max-width: fit-content;
+  border: 1px solid rgba(255, 255, 255, 0.234);
+  border-radius: 10px;
+  background-color: rgb(20, 20, 20);
+}
+
+
+.day {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 12px;
+  text-align: center;
+  border: 1px solid #cccccc48;
+  border-radius: 5px;
+  width: 40px;
+  height: 40px;
+}
+
+
+
+.small {
+  width: 30px;
+  height: 30px;
+  font-size: 16px;
+}
+@media screen and (max-width: 378px) {
+  .calendar {
+padding: 0;
+
+
+}
+.small {
+  width: 20px;
+  height: 20px;
+  font-size: 12px;
+}
+}
+@media screen and (min-width: 650px) {
+  .calendar {
+padding: 10px;
+font-size: 16px;
+}
+.day:not(.small) {
+  width: 80px;
+  height: 80px;
+}
+}
+
+.current-day {
+  border-color: yellow;
+}
+
+.Success {
+  background-color: #00ff0847;
+}
+
+.Mediocre {
+  background-color: #ffe6006d;
+}
+
+.Failed {
+  background-color: #ff001947;
+}
+
+.buttons {
+  z-index: 999;
+  font-size: 18px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.105);
+  backdrop-filter: blur(10px);
+}
+
+.btn {
+  width: 100px;
+  border-radius: 999px;
+  margin: 2px;
+  border: 1px solid;
+}
+
+.btn-clear {
+  width: fit-content;
+  border: 1px solid white;
+  transform: translate(12px);  
+  border-radius: 999px;
+  line-height: 2px;
+  padding: 4px 3px;
+  padding-bottom: 5px;
+  right: 2px;
+  top: 2px;
+}
+
+.btn-cancel {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  right: -45px;
+  top: -5px;
+  border: 1px solid rgb(248, 122, 122);
+  border-radius: 999px;
+  line-height: 10px;
+  padding: 4px 5px 6px 5px;
+  color: rgb(255, 87, 87);
+  background-color: rgba(255, 0, 0, 0.295);
+}
+
+.btn-rate {
+  border: 1px solid rgb(160, 155, 0);
+  width: 30px;
+  border-radius: 999px;
+}
+
+.btn-success {
+  background-color: rgba(0, 255, 0, 0.249);
+  color: rgb(117, 250, 117);
+}
+
+.btn-mediocre {
+  background-color: rgba(246, 255, 0, 0.618);
+  color: rgb(0, 0, 0);
+  border-color: rgb(255, 234, 0);
+}
+
+.btn-failed {
+  background-color: rgba(255, 0, 0, 0.259);
+  color: rgb(252, 143, 143);
+}
+
+.all-months {
+  margin-top: 20px;
+}
+
+.month-card {
+  margin-bottom: 20px;
+}
+
+.month-card .calendar {
+  margin-top: 0px;
+}
