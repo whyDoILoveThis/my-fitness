@@ -1,0 +1,43 @@
+/* styles/globals.css */
+
+.workouts-page {
+    padding: 20px;
+  }
+  
+  .add-workout {
+    display: flex;
+    margin-bottom: 20px;
+  }
+  
+  .add-workout input {
+    margin-right: 10px;
+    padding: 5px;
+  }
+  
+  .add-workout button {
+    padding: 5px 10px;
+  }
+  
+  .workouts-list {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .workout-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+  }
+  
+  .workout-buttons {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .workout-item button {
+    padding: 5px 10px;
+  }
+  
