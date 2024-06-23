@@ -15,8 +15,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>{children}</body>
+    <html className="flex flex-col items-center" lang="en">
+      <body className={`max-w-[500px] ${inter.className}`}>{children}</body>
     </html>
   );
 }

@@ -11,14 +11,19 @@ export default function Home() {
       </Head>
       <main>
         <h1 className="text-4xl text-center mb-4">Habit Tracker 📅</h1>
-        <Link className=" link" href="/overlook">
-          Overlook
-        </Link>
-        <Link className="link" href="/graph">
-          Graph View
-        </Link>
-        <Calendar />
+        <div className="flex justify-center">
+          <Link className=" link link-active" href="/">
+            Calendar
+          </Link>
+          <Link className=" link" href="/overlook">
+            Overlook
+          </Link>
+          <Link className="link" href="/graph">
+            Graph
+          </Link>
+        </div>
       </main>
+      <Calendar />
     </div>
   );
 }

@@ -73,16 +73,19 @@ const AllMonthsPage: React.FC = () => {
 
   return (
     <div className="all-months-page">
-      <h1 className="text-4xl text-center my-4">📈 All Months Progress</h1>
-      <div className="mb-4">
+      <h1 className="text-4xl text-center my-4">📈 Vizualization</h1>
+      <div className="mb-4 flex justify-center">
         <Link className="link" href="/">
           Calendar
         </Link>
         <Link className=" link" href="/overlook">
           Overlook
         </Link>
+        <Link className=" link link-active" href="/graph">
+          Graph
+        </Link>
       </div>
-      <div>
+      <div className="sm:flex justify-center">
         {currentMonthData && (
           <div className="progress-chart p-6 m-4 border border-slate-600 bg-slate-400 bg-opacity-5 rounded-2xl">
             <h3>{currentMonthData.id}</h3>

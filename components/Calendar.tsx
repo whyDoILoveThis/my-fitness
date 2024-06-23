@@ -118,7 +118,7 @@ const CurrentMonth: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center mt-5">
+    <div className=" flex flex-col items-center justify-center mt-5">
       <div className="flex gap-4 items-center">
         <button
           onClick={() => {
