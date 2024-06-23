@@ -2,7 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+
 html {
   background-color: rgb(19, 18, 18);
   color: rgb(230, 230, 230);
+}
+
+.border-1 {
+  border: 1px solid;
+}
+
+ .link  {
+ @apply border-white border-1 p-1 px-3 rounded-full ml-6 bg-slate-50 bg-opacity-10 hover:bg-opacity-15
 }

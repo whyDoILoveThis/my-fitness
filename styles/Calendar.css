@@ -80,6 +80,7 @@ font-size: 16px;
   width: 100vw;
   height: 100vh;
   display: flex;
+  gap: 4px;
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -95,15 +96,7 @@ font-size: 16px;
 }
 
 .btn-clear {
-  width: fit-content;
-  border: 1px solid white;
-  transform: translate(12px);  
-  border-radius: 999px;
-  line-height: 2px;
-  padding: 4px 3px;
-  padding-bottom: 5px;
-  right: 2px;
-  top: 2px;
+  background-color: rgba(122, 122, 122, 0.162);
 }
 
 .btn-cancel {
@@ -117,8 +110,19 @@ font-size: 16px;
   border-radius: 999px;
   line-height: 10px;
   padding: 4px 5px 6px 5px;
-  color: rgb(255, 87, 87);
+  color: rgb(255, 195, 195);
   background-color: rgba(255, 0, 0, 0.295);
+}
+
+.btn-hint {
+  border: 1px solid rgba(255, 255, 255, 0.41);
+  padding: 4px 11px;
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.477);
+}
+
+.btn-hint:hover {
+  background-color: rgba(255, 255, 255, 0.104);
 }
 
 .btn-rate {
@@ -133,9 +137,9 @@ font-size: 16px;
 }
 
 .btn-mediocre {
-  background-color: rgba(246, 255, 0, 0.618);
-  color: rgb(0, 0, 0);
-  border-color: rgb(255, 234, 0);
+  background-color: rgba(246, 255, 0, 0.314);
+  color: rgb(255, 241, 151);
+  border-color: rgb(255, 241, 91);
 }
 
 .btn-failed {

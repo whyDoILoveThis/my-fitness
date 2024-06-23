@@ -30,6 +30,7 @@ const AllMonths: React.FC = () => {
   const [pastMonths, setPastMonths] = useState<MonthData[]>([]);
   const [days, setDays] = useState<DayStatus[]>([]);
   const [currentDayIndex, setCurrentDayIndex] = useState<number>(-1); // State to track current day index
+  const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   const currentMonth = new Date().toLocaleString("default", { month: "long" });
   const year = new Date().getFullYear();
   const docId = `${currentMonth}-${year}`;
@@ -87,32 +88,40 @@ const AllMonths: React.FC = () => {
     await updateDoc(docRef, { days: newDays });
   };
 
+  const renderCalendar = (monthData: MonthData) => {
+    const firstDayOfWeek = new Date(year, new Date().getMonth(), 1).getDay();
+    const leadingEmptyDays = Array.from({ length: firstDayOfWeek }, () => "");
+
+    return (
+      <div className="month-card">
+        <h3 className="text-center">{monthData.id}</h3>
+        <div className="calendar">
+          {daysOfWeek.map((day) => (
+            <div key={day} className="text-center">
+              {day}
+            </div>
+          ))}
+          {leadingEmptyDays.map((_, index) => (
+            <div key={`empty-${index}`} className="calendar-day empty"></div>
+          ))}
+          {monthData.days.map((status, index) => (
+            <div key={index} className={`day small ${status}`}>
+              <span>{index + 1}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="all-months ml-2 text-base">
-      {currentMonthData && (
-        <div className="month-card">
-          <h3>{currentMonthData.id}</h3>
-          <div className="calendar">
-            {currentMonthData.days.map((status, index) => (
-              <div key={index} className={`day small ${status}`}>
-                <span>{index + 1}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      {currentMonthData && renderCalendar(currentMonthData)}
       <div className="past-months-grid">
         {pastMonths.map((month) => (
-          <div key={month.id} className="month-card">
-            <h3 className="text-center">{month.id}</h3>
-            <div className="calendar">
-              {month.days.map((status, index) => (
-                <div key={index} className={`day small ${status}`}>
-                  <span>{index + 1}</span>
-                </div>
-              ))}
-            </div>
-          </div>
+          <React.Fragment key={month.id}>
+            {renderCalendar(month)}
+          </React.Fragment>
         ))}
       </div>
     </div>
