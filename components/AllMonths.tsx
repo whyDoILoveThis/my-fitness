@@ -11,6 +11,7 @@ import {
 } from "firebase/firestore";
 import "../styles/Calendar.css"; // Import global CSS
 import { useAuth } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
 
 type DayStatus =
   | "neutral"
