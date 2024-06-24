@@ -10,6 +10,7 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import "../styles/Calendar.css"; // Import global CSS
+import { useAuth } from "@clerk/nextjs";
 
 type DayStatus =
   | "neutral"
@@ -34,6 +35,7 @@ const AllMonths: React.FC = () => {
   const currentMonth = new Date().toLocaleString("default", { month: "long" });
   const year = new Date().getFullYear();
   const docId = `${currentMonth}-${year}`;
+  const { userId } = useAuth();
 
   useEffect(() => {
     const daysInMonth = new Date(year, new Date().getMonth() + 1, 0).getDate();
@@ -47,7 +49,7 @@ const AllMonths: React.FC = () => {
     setCurrentDayIndex(today - 1); // Set current day index
 
     const fetchCurrentMonth = async () => {
-      const docRef = doc(db, "habits", docId);
+      const docRef = doc(db, `habits-${userId}`, docId);
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists()) {
@@ -64,7 +66,9 @@ const AllMonths: React.FC = () => {
     };
 
     const fetchPastMonths = async () => {
-      const querySnapshot = await getDocs(collection(db, "pastHabits"));
+      const querySnapshot = await getDocs(
+        collection(db, `pastHabits-${userId}`)
+      );
       const monthsData: MonthData[] = [];
       querySnapshot.forEach((doc) => {
         const data = doc.data().days as DayStatus[];
@@ -84,7 +88,7 @@ const AllMonths: React.FC = () => {
     newDays[index] = status;
     setCurrentMonthData({ ...currentMonthData, days: newDays });
 
-    const docRef = doc(db, "habits", docId);
+    const docRef = doc(db, `habits-${userId}`, docId);
     await updateDoc(docRef, { days: newDays });
   };
 

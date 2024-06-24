@@ -1,6 +1,14 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import {
+  ClerkProvider,
+  SignInButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from "@clerk/nextjs";
+import Nav from "@/components/Nav";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -15,8 +23,30 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html className="flex flex-col items-center" lang="en">
-      <body className={`max-w-[500px] ${inter.className}`}>{children}</body>
-    </html>
+    <ClerkProvider>
+      <html className="flex flex-col items-center" lang="en">
+        <SignedOut>
+          <body
+            className={`max-w-[500px] flex flex-col justify-center items-center h-screen ${inter.className}`}
+          >
+            <p>Track your habits and count reps</p>
+            <p className="border w-fit hover:bg-white hover:bg-opacity-10 p-1 px-4 rounded-full mt-2">
+              <SignInButton />
+            </p>
+          </body>
+        </SignedOut>
+        <SignedIn>
+          <body className={`max-w-[500px] ${inter.className}`}>
+            <main>
+              <div className=" flex border p-2 mt-2 rounded-xl border-white border-opacity-20 bg-black bg-opacity-15">
+                <UserButton />
+                <Nav />
+              </div>
+              {children}{" "}
+            </main>
+          </body>
+        </SignedIn>
+      </html>
+    </ClerkProvider>
   );
 }

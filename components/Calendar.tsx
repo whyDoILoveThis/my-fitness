@@ -4,7 +4,7 @@ import { db } from "../lib/firebaseConfig";
 import { doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
 import "../styles/Calendar.css";
 import { ScaleLoader } from "react-spinners";
-import ProgressChart from "./ProgressChart";
+import { useAuth } from "@clerk/nextjs";
 
 type DayStatus =
   | "neutral"
@@ -34,6 +34,7 @@ const CurrentMonth: React.FC = () => {
   const [allData, setAllData] = useState<{ date: string; status: string }[]>(
     []
   );
+  const { userId } = useAuth();
 
   useEffect(() => {
     setLoading(true);
@@ -48,7 +49,7 @@ const CurrentMonth: React.FC = () => {
     setCurrentDayIndex(today - 1); // Set current day index
 
     const initializeDoc = async () => {
-      const docRef = doc(db, "habits", docId);
+      const docRef = doc(db, `habits-${userId}`, docId);
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists()) {
@@ -101,7 +102,7 @@ const CurrentMonth: React.FC = () => {
     newDays[index] = status;
     setDays(newDays);
 
-    const docRef = doc(db, "habits", docId);
+    const docRef = doc(db, `habits-${userId}`, docId);
     await updateDoc(docRef, { days: newDays });
   };
 

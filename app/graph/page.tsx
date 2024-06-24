@@ -6,6 +6,8 @@ import { db } from "../../lib/firebaseConfig"; // Adjust the path to firebaseCon
 import { collection, getDocs, getDoc, doc } from "firebase/firestore";
 import ProgressChart from "../../components/ProgressChart"; // Adjust the path to ProgressChart if needed
 import Link from "next/link";
+import Nav from "@/components/Nav";
+import { useAuth } from "@clerk/nextjs";
 
 interface MonthData {
   id: string;
@@ -27,10 +29,11 @@ const AllMonthsPage: React.FC = () => {
   const currentMonth = new Date().toLocaleString("default", { month: "long" });
   const year = new Date().getFullYear();
   const docId = `${currentMonth}-${year}`;
+  const { userId } = useAuth();
 
   useEffect(() => {
     const fetchCurrentMonth = async () => {
-      const docRef = doc(db, "habits", docId);
+      const docRef = doc(db, `habits-${userId}`, docId);
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists()) {
@@ -74,17 +77,6 @@ const AllMonthsPage: React.FC = () => {
   return (
     <div className="all-months-page">
       <h1 className="text-4xl text-center my-4">📈 Vizualization</h1>
-      <div className="mb-4 flex justify-center">
-        <Link className="link" href="/">
-          Calendar
-        </Link>
-        <Link className=" link" href="/overlook">
-          Overlook
-        </Link>
-        <Link className=" link link-active" href="/graph">
-          Graph
-        </Link>
-      </div>
       <div className="sm:flex justify-center">
         {currentMonthData && (
           <div className="progress-chart p-6 m-4 border border-slate-600 bg-slate-400 bg-opacity-5 rounded-2xl">
