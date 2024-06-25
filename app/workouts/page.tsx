@@ -129,7 +129,7 @@ const WorkoutsPage: React.FC = () => {
           </div>
         ))}
       </div>
-      <Webcam />
+      
     </div>
   );
 };
