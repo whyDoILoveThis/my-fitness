@@ -15,6 +15,7 @@ import "../../styles/Calendar.css";
 import "../../styles/Workouts.css";
 import Nav from "@/components/Nav";
 import { useAuth } from "@clerk/nextjs";
+import Webcam from "@/components/Webcam";
 
 interface Workout {
   id: string;
@@ -128,6 +129,7 @@ const WorkoutsPage: React.FC = () => {
           </div>
         ))}
       </div>
+      <Webcam />
     </div>
   );
 };
