@@ -38,7 +38,7 @@ export default function RootLayout({
         <SignedIn>
           <body className={`max-w-[500px] ${inter.className}`}>
             <main>
-              <div className=" flex flex-col items-center justify-center border p-2 mt-2 rounded-xl border-white border-opacity-20 bg-black bg-opacity-15">
+              <div className=" flex flex-col items-center justify-center gap-2 border p-2 mt-2 rounded-xl border-white border-opacity-20 bg-black bg-opacity-15">
                 <UserButton />
                 <Nav />
               </div>
