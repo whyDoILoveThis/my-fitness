@@ -16,7 +16,7 @@ html {
   color: rgb(231, 234, 248);
   border: 1px solid;
    border-color: rgba(240, 248, 255, 0.233);
-   @apply   p-1 rounded-full ml-6 bg-slate-50 bg-opacity-10 hover:bg-opacity-15
+   @apply   p-1 rounded-full bg-slate-50 bg-opacity-10 hover:bg-opacity-15
 }
 
 .link-active {
