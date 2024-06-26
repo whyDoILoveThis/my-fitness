@@ -10,6 +10,9 @@ import {
   updateDoc,
   doc,
   deleteDoc,
+  query,
+  where,
+  orderBy,
 } from "firebase/firestore";
 import "../../styles/Calendar.css";
 import "../../styles/Workouts.css";
@@ -23,10 +26,16 @@ interface Workout {
   reps: number;
 }
 
+interface SavedWorkout {
+  id: string;
+  date: Date;
+  workouts: Workout[];
+}
+
 const WorkoutsPage: React.FC = () => {
   const [workoutName, setWorkoutName] = useState("");
   const [workouts, setWorkouts] = useState<Workout[]>([]);
-  const [savedWorkouts, setSavedWorkouts] = useState([]);
+  const [savedWorkouts, setSavedWorkouts] = useState<SavedWorkout[]>([]);
   const [loading, setLoading] = useState(true);
   const { userId } = useAuth();
 
@@ -42,18 +51,26 @@ const WorkoutsPage: React.FC = () => {
     };
 
     const fetchSavedWorkouts = async () => {
-      const q = query(collection(db, `saved-workouts-${userId}`), orderBy("date", "asc"));
+      const q = query(
+        collection(db, `saved-workouts-${userId}`),
+        orderBy("date", "asc")
+      );
       const querySnapshot = await getDocs(q);
-      const savedWorkoutsData = [];
+      const savedWorkoutsData: SavedWorkout[] = [];
       querySnapshot.forEach((doc) => {
-        savedWorkoutsData.push({ id: doc.id, ...doc.data() });
+        const data = doc.data();
+        savedWorkoutsData.push({
+          id: doc.id,
+          date: data.date.toDate(), // Converting Firestore timestamp to JS Date
+          workouts: data.workouts,
+        });
       });
       setSavedWorkouts(savedWorkoutsData);
     };
 
     fetchWorkouts();
     fetchSavedWorkouts();
-  }, [db, userId]);
+  }, [db, userId, savedWorkouts]);
 
   const addWorkout = async () => {
     if (workoutName.trim() === "") return;
@@ -65,7 +82,6 @@ const WorkoutsPage: React.FC = () => {
     setWorkouts([...workouts, { id: docRef.id, name: workoutName, reps: 0 }]);
     setWorkoutName("");
   };
-
 
   const saveWorkouts = async () => {
     const currentDate = new Date();
@@ -84,7 +100,7 @@ const WorkoutsPage: React.FC = () => {
       const docRef = querySnapshot.docs[0].ref;
       await updateDoc(docRef, {
         date: new Date(),
-        workouts: workouts.map(workout => ({
+        workouts: workouts.map((workout) => ({
           name: workout.name,
           reps: workout.reps,
         })),
@@ -93,14 +109,14 @@ const WorkoutsPage: React.FC = () => {
       // Create a new document
       await addDoc(collection(db, `saved-workouts-${userId}`), {
         date: new Date(),
-        workouts: workouts.map(workout => ({
+        workouts: workouts.map((workout) => ({
           name: workout.name,
           reps: workout.reps,
         })),
       });
     }
   };
-  
+
   const updateReps = async (id: string, delta: number) => {
     const workout = workouts.find((workout) => workout.id === id);
     if (workout) {
@@ -151,7 +167,7 @@ const WorkoutsPage: React.FC = () => {
         {workouts.map((workout) => (
           <div
             key={workout.id}
-            className="flex justify-evenly items-center gap-4 p-4 border border-white border-opacity-30 rounded-2xl mb-4"
+            className="flex justify-evenly items-center gap-4 p-4 border border-white border-opacity-30 bg-black bg-opacity-30 rounded-2xl mb-4"
           >
             <span>
               <b>{workout.name}</b>
@@ -176,19 +192,30 @@ const WorkoutsPage: React.FC = () => {
           </div>
         ))}
       </div>
-      <button onClick={saveWorkouts}>Save Workouts</button>
-      <ul>
-          {savedWorkouts.map(saved => (
-            <li key={saved.id}>
-              <p>Date: {new Date(saved.date.seconds * 1000).toLocaleDateString()}</p>
-              <ul>
-                {saved.workouts.map((workout, index) => (
-                  <li key={index}>{workout.name} - {workout.reps} reps</li>
-                ))}
-              </ul>
-            </li>
-          ))}
-        </ul>
+      <button
+        className=" bg-green-500 bg-opacity-25 rounded-full p-1 px-3 mb-20 border border-green-400 text-green-300"
+        onClick={saveWorkouts}
+      >
+        Save Workouts
+      </button>
+      <h2 className="text-2xl text-center">📁 Saved Workouts</h2>
+      <ul className="bg-black bg-opacity-30 border border-white border-opacity-25 p-4 mb-4 rounded-2xl">
+        {savedWorkouts.map((saved) => (
+          <li key={saved.id}>
+            <p className="text-2xl text-center mb-4">
+              {" "}
+              {saved.date.toLocaleDateString()}
+            </p>
+            <ul>
+              {saved.workouts.map((workout, index) => (
+                <li key={index}>
+                  <b>{workout.name}</b> - {workout.reps}
+                </li>
+              ))}
+            </ul>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };
