@@ -54,6 +54,17 @@ const WorkoutsPage: React.FC = () => {
     setWorkoutName("");
   };
 
+  const saveWorkouts = async () => {
+    const currentDate = new Date();
+    await addDoc(collection(db, `saved-workouts-${userId}`), {
+      date: currentDate,
+      workouts: workouts.map(workout => ({
+        name: workout.name,
+        reps: workout.reps,
+      })),
+    });
+  };
+
   const updateReps = async (id: string, delta: number) => {
     const workout = workouts.find((workout) => workout.id === id);
     if (workout) {
@@ -129,7 +140,7 @@ const WorkoutsPage: React.FC = () => {
           </div>
         ))}
       </div>
-      
+      <button onClick={saveWorkouts}>Save Workouts</button>
     </div>
   );
 };
