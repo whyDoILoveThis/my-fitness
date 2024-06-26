@@ -53,7 +53,7 @@ const WorkoutsPage: React.FC = () => {
 
     fetchWorkouts();
     fetchSavedWorkouts();
-  }, []);
+  }, [db, userId]);
 
   const addWorkout = async () => {
     if (workoutName.trim() === "") return;
