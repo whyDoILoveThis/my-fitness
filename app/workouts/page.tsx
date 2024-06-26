@@ -26,6 +26,7 @@ interface Workout {
 const WorkoutsPage: React.FC = () => {
   const [workoutName, setWorkoutName] = useState("");
   const [workouts, setWorkouts] = useState<Workout[]>([]);
+  const [savedWorkouts, setSavedWorkouts] = useState([]);
   const [loading, setLoading] = useState(true);
   const { userId } = useAuth();
 
@@ -40,7 +41,18 @@ const WorkoutsPage: React.FC = () => {
       setLoading(false);
     };
 
+    const fetchSavedWorkouts = async () => {
+      const q = query(collection(db, `saved-workouts-${userId}`), orderBy("date", "asc"));
+      const querySnapshot = await getDocs(q);
+      const savedWorkoutsData = [];
+      querySnapshot.forEach((doc) => {
+        savedWorkoutsData.push({ id: doc.id, ...doc.data() });
+      });
+      setSavedWorkouts(savedWorkoutsData);
+    };
+
     fetchWorkouts();
+    fetchSavedWorkouts();
   }, []);
 
   const addWorkout = async () => {
@@ -54,17 +66,41 @@ const WorkoutsPage: React.FC = () => {
     setWorkoutName("");
   };
 
+
   const saveWorkouts = async () => {
     const currentDate = new Date();
-    await addDoc(collection(db, `saved-workouts-${userId}`), {
-      date: currentDate,
-      workouts: workouts.map(workout => ({
-        name: workout.name,
-        reps: workout.reps,
-      })),
-    });
-  };
+    const startOfDay = new Date(currentDate.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(currentDate.setHours(23, 59, 59, 999));
 
+    const q = query(
+      collection(db, `saved-workouts-${userId}`),
+      where("date", ">=", startOfDay),
+      where("date", "<=", endOfDay)
+    );
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+      // Update the existing document for today
+      const docRef = querySnapshot.docs[0].ref;
+      await updateDoc(docRef, {
+        date: new Date(),
+        workouts: workouts.map(workout => ({
+          name: workout.name,
+          reps: workout.reps,
+        })),
+      });
+    } else {
+      // Create a new document
+      await addDoc(collection(db, `saved-workouts-${userId}`), {
+        date: new Date(),
+        workouts: workouts.map(workout => ({
+          name: workout.name,
+          reps: workout.reps,
+        })),
+      });
+    }
+  };
+  
   const updateReps = async (id: string, delta: number) => {
     const workout = workouts.find((workout) => workout.id === id);
     if (workout) {
@@ -141,6 +177,18 @@ const WorkoutsPage: React.FC = () => {
         ))}
       </div>
       <button onClick={saveWorkouts}>Save Workouts</button>
+      <ul>
+          {savedWorkouts.map(saved => (
+            <li key={saved.id}>
+              <p>Date: {new Date(saved.date.seconds * 1000).toLocaleDateString()}</p>
+              <ul>
+                {saved.workouts.map((workout, index) => (
+                  <li key={index}>{workout.name} - {workout.reps} reps</li>
+                ))}
+              </ul>
+            </li>
+          ))}
+        </ul>
     </div>
   );
 };
