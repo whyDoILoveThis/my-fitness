@@ -3,8 +3,8 @@ import React, { useState, useEffect } from "react";
 import { db } from "../lib/firebaseConfig";
 import { doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
 import "../styles/Calendar.css";
-import { ScaleLoader } from "react-spinners";
 import { useAuth } from "@clerk/nextjs";
+import Loader from "./Loader";
 
 type DayStatus =
   | "neutral"
@@ -111,11 +111,7 @@ const CurrentMonth: React.FC = () => {
   const leadingEmptyDays = Array.from({ length: firstDayOfWeek }, () => "");
 
   if (loading) {
-    return (
-      <div className="flex min-h-[50vh] justify-center items-center">
-        <ScaleLoader color="#68686845" />
-      </div>
-    );
+    return <Loader />;
   }
 
   return (
