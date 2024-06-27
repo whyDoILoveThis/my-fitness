@@ -53,7 +53,7 @@ const WorkoutsPage: React.FC = () => {
     const fetchSavedWorkouts = async () => {
       const q = query(
         collection(db, `saved-workouts-${userId}`),
-        orderBy("date", "dsc")
+        orderBy("date", "desc")
       );
       const querySnapshot = await getDocs(q);
       const savedWorkoutsData: SavedWorkout[] = [];
