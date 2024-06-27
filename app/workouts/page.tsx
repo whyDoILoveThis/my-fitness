@@ -199,9 +199,9 @@ const WorkoutsPage: React.FC = () => {
         Save Workouts
       </button>
       <h2 className="text-2xl text-center">📁 Saved Workouts</h2>
-      <ul className="bg-black bg-opacity-30 border border-white border-opacity-25 p-4 mb-4 rounded-2xl">
+      <ul>
         {savedWorkouts.map((saved) => (
-          <li key={saved.id}>
+          <li className='bg-black bg-opacity-30 border border-white border-opacity-25 p-4 mb-4 rounded-2xl' key={saved.id}>
             <p className="text-2xl text-center mb-4">
               {" "}
               {saved.date.toLocaleDateString()}
