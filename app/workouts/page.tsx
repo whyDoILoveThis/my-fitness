@@ -52,27 +52,27 @@ const WorkoutsPage: React.FC = () => {
       setLoading(false);
     };
 
-    const fetchSavedWorkouts = async () => {
-      const q = query(
-        collection(db, `saved-workouts-${userId}`),
-        orderBy("date", "desc")
-      );
-      const querySnapshot = await getDocs(q);
-      const savedWorkoutsData: SavedWorkout[] = [];
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        savedWorkoutsData.push({
-          id: doc.id,
-          date: data.date.toDate(), // Converting Firestore timestamp to JS Date
-          workouts: data.workouts,
-        });
-      });
-      setSavedWorkouts(savedWorkoutsData);
-    };
-
     fetchWorkouts();
     fetchSavedWorkouts();
-  }, [db, userId, savedWorkouts]);
+  }, [db, userId]);
+
+  const fetchSavedWorkouts = async () => {
+    const q = query(
+      collection(db, `saved-workouts-${userId}`),
+      orderBy("date", "desc")
+    );
+    const querySnapshot = await getDocs(q);
+    const savedWorkoutsData: SavedWorkout[] = [];
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      savedWorkoutsData.push({
+        id: doc.id,
+        date: data.date.toDate(), // Converting Firestore timestamp to JS Date
+        workouts: data.workouts,
+      });
+    });
+    setSavedWorkouts(savedWorkoutsData);
+  };
 
   const addWorkout = async () => {
     if (workoutName.trim() === "") return;
@@ -120,6 +120,7 @@ const WorkoutsPage: React.FC = () => {
       });
       setWorkoutsLoading(false);
     }
+    fetchSavedWorkouts();
     setWorkoutsLoading(false);
   };
 
@@ -203,13 +204,17 @@ const WorkoutsPage: React.FC = () => {
         >
           Save Workouts
         </button>
+
         <h2 className="text-2xl text-center">📁 Saved Workouts</h2>
         {workoutsLoading ? (
           <Loader />
         ) : (
-          <ul className="bg-black bg-opacity-30 border border-white border-opacity-25 p-4 mb-4 rounded-2xl">
+          <ul>
             {savedWorkouts.map((saved) => (
-              <li key={saved.id}>
+              <li
+                className="bg-black bg-opacity-30 border border-white border-opacity-25 p-4 mb-4 rounded-2xl"
+                key={saved.id}
+              >
                 <p className="text-2xl text-center mb-4">
                   {" "}
                   {saved.date.toLocaleDateString()}
@@ -226,36 +231,7 @@ const WorkoutsPage: React.FC = () => {
           </ul>
         )}
       </div>
-<<<<<<< HEAD
     );
-=======
-      <button
-        className=" bg-green-500 bg-opacity-25 rounded-full p-1 px-3 mb-20 border border-green-400 text-green-300"
-        onClick={saveWorkouts}
-      >
-        Save Workouts
-      </button>
-      <h2 className="text-2xl text-center">📁 Saved Workouts</h2>
-      <ul>
-        {savedWorkouts.map((saved) => (
-          <li className='bg-black bg-opacity-30 border border-white border-opacity-25 p-4 mb-4 rounded-2xl' key={saved.id}>
-            <p className="text-2xl text-center mb-4">
-              {" "}
-              {saved.date.toLocaleDateString()}
-            </p>
-            <ul>
-              {saved.workouts.map((workout, index) => (
-                <li key={index}>
-                  <b>{workout.name}</b> - {workout.reps}
-                </li>
-              ))}
-            </ul>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
->>>>>>> 8327b56238d8b16ea2f3a5f0d3a9a65936c642b2
 };
 
 export default WorkoutsPage;
