@@ -68,7 +68,7 @@ const AllMonths: React.FC = () => {
 
     const fetchPastMonths = async () => {
       const querySnapshot = await getDocs(
-        collection(db, `pastHabits-${userId}`)
+        collection(db, `habits-${userId}`)
       );
       const monthsData: MonthData[] = [];
       querySnapshot.forEach((doc) => {
