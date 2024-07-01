@@ -49,7 +49,7 @@ const AllMonthsPage: React.FC = () => {
     };
 
     const fetchMonthsData = async () => {
-      const querySnapshot = await getDocs(collection(db, "pastHabits"));
+      const querySnapshot = await getDocs(collection(db, `habits-${userId}`));
       const monthsData: MonthData[] = [];
 
       querySnapshot.forEach((doc) => {
