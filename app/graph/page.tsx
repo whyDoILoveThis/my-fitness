@@ -8,6 +8,7 @@ import ProgressChart from "../../components/ProgressChart"; // Adjust the path t
 import Link from "next/link";
 import Nav from "@/components/Nav";
 import { useAuth } from "@clerk/nextjs";
+import DoughnutChart from "@/components/DoughnutChart";
 
 interface MonthData {
   id: string;
@@ -30,6 +31,8 @@ const AllMonthsPage: React.FC = () => {
   const year = new Date().getFullYear();
   const docId = `${currentMonth}-${year}`;
   const { userId } = useAuth();
+
+  const [selected, setSelected] = useState(1);
 
   useEffect(() => {
     const fetchCurrentMonth = async () => {
@@ -77,19 +80,37 @@ const AllMonthsPage: React.FC = () => {
   return (
     <div className="all-months-page">
       <h1 className="text-4xl text-center my-4">📈 Vizualization</h1>
-      <div className="sm:flex justify-center">
-        {currentMonthData && (
-          <div className="progress-chart p-6 m-4 border border-slate-600 bg-slate-400 bg-opacity-5 rounded-2xl">
-            <h3>{currentMonthData.id}</h3>
-            <ProgressChart data={currentMonthData.days} />
-          </div>
-        )}
-      </div>
+
       <div className="progress-charts">
+        <div className="flex justify-center gap-2">
+          <button
+            className="link"
+            onClick={() => {
+              setSelected(1);
+            }}
+          >
+            Line
+          </button>
+          <button
+            className="link"
+            onClick={() => {
+              setSelected(2);
+            }}
+          >
+            Doughnut
+          </button>
+        </div>
         {monthsData.map((month) => (
-          <div key={month.id} className="progress-chart">
+          <div
+            key={month.id}
+            className="progress-chart flex flex-col items-center justify-center p-6 m-4 border border-slate-600 bg-slate-400 bg-opacity-5 rounded-2xl"
+          >
             <h3>{month.id}</h3>
-            <ProgressChart data={month.days} />
+            {selected === 1 ? (
+              <ProgressChart data={month.days} />
+            ) : (
+              selected === 2 && <DoughnutChart data={month.days} />
+            )}
           </div>
         ))}
       </div>

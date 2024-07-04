@@ -5,6 +5,7 @@ import { doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
 import "../styles/Calendar.css";
 import { useAuth } from "@clerk/nextjs";
 import Loader from "./Loader";
+import PopOver from "./PopOver";
 
 type DayStatus =
   | "neutral"
@@ -116,115 +117,93 @@ const CurrentMonth: React.FC = () => {
 
   return (
     <div className=" flex flex-col items-center justify-center mt-5">
-      <div className="flex gap-4 items-center">
-        <button
-          onClick={() => {
-            setShowHint(true);
-          }}
-          className="btn-hint absolute left-20"
-        >
-          ?
-        </button>
+      <div className="flex justify-center gap-2">
+        <PopOver
+          btnTxt="?"
+          title="How To Use"
+          line1="👆🏽 Click or touch a day of the month to apply a rating"
+          line2="📅 View past months from the overlook page"
+          line3="📈 Visualize the data from the graph page"
+        />
         <h1 className="text-5xl text-center">{currentMonth}</h1>
       </div>
-      {showHint && (
-        <div className="buttons">
-          <button
-            onClick={() => {
-              setShowHint(false);
-            }}
-            className="btn-cancel "
-          >
-            x
-          </button>
-          <p className="text-2xl">How To Use</p>
-          <p className="text-sm mb-5">
-            👆🏽 Click or touch a day of the month to apply a rating
-          </p>
-          <p className="text-sm mb-5">
-            📅 View past months from the overlook page
-          </p>
-          <p className="text-sm">📈 Visualize the data from the graph page</p>
-        </div>
-      )}
-      <div>
-        <div className="calendar">
-          {daysOfWeek.map((day) => (
-            <div key={day} className="calendar-day-header text-center">
-              {day}
-            </div>
-          ))}
-          {leadingEmptyDays.map((_, index) => (
-            <div key={`empty-${index}`} className="calendar-day empty"></div>
-          ))}
-          {days.map((status, index) => (
-            <>
-              <div
-                key={index}
-                className={`day cursor-pointer ${status} ${
-                  index === currentDayIndex ? "current-day" : ""
-                }`}
-                onClick={() => {
-                  setSelectedIndex(index);
-                }}
-              >
-                <span className="flex justify-center items-center">
-                  {index + 1}
-                </span>
-                {selectedIndex !== index && status !== "neutral" && (
-                  <p className="status">{status}</p>
-                )}
-              </div>
-              {selectedIndex === index && (
-                <div className="buttons">
-                  <button
-                    className="btn-cancel"
-                    onClick={() => setSelectedIndex(9999)}
-                  >
-                    x
-                  </button>
-                  <p className="text-2xl mb-4">Day {index + 1}</p>
-                  <button
-                    className="btn btn-success"
-                    onClick={() => {
-                      updateDayStatus(index, "Success");
-                      setSelectedIndex(-1);
-                    }}
-                  >
-                    Success
-                  </button>
-                  <button
-                    className="btn btn-mediocre"
-                    onClick={() => {
-                      updateDayStatus(index, "Mediocre");
-                      setSelectedIndex(-1);
-                    }}
-                  >
-                    Mediocre
-                  </button>
-                  <button
-                    className="btn btn-failed"
-                    onClick={() => {
-                      updateDayStatus(index, "Failed");
-                      setSelectedIndex(-1);
-                    }}
-                  >
-                    Failure
-                  </button>
-                  <button
-                    className="btn btn-clear"
-                    onClick={() => {
-                      updateDayStatus(index, "neutral");
-                      setSelectedIndex(-1);
-                    }}
-                  >
-                    Clear
-                  </button>
-                </div>
+
+      <div className="calendar">
+        {daysOfWeek.map((day) => (
+          <div key={day} className="calendar-day-header text-center">
+            {day}
+          </div>
+        ))}
+        {leadingEmptyDays.map((_, index) => (
+          <div key={`empty-${index}`} className="calendar-day empty"></div>
+        ))}
+        {days.map((status, index) => (
+          <>
+            <div
+              key={index}
+              className={`day cursor-pointer bg-black bg-opacity-30 ${status} ${
+                index === currentDayIndex ? "current-day" : ""
+              }`}
+              onClick={() => {
+                setSelectedIndex(index);
+              }}
+            >
+              <span className="flex justify-center items-center">
+                {index + 1}
+              </span>
+              {selectedIndex !== index && status !== "neutral" && (
+                <p className="status">{status}</p>
               )}
-            </>
-          ))}
-        </div>
+            </div>
+            {selectedIndex === index && (
+              <div className="buttons">
+                <button
+                  className="btn-cancel"
+                  onClick={() => setSelectedIndex(9999)}
+                >
+                  x
+                </button>
+                <p className="text-2xl mb-4">Day {index + 1}</p>
+                <button
+                  className="statbtn btn-success"
+                  onClick={() => {
+                    updateDayStatus(index, "Success");
+                    setSelectedIndex(-1);
+                  }}
+                >
+                  Success
+                </button>
+                <button
+                  className="statbtn btn-mediocre"
+                  onClick={() => {
+                    updateDayStatus(index, "Mediocre");
+                    setSelectedIndex(-1);
+                  }}
+                >
+                  Mediocre
+                </button>
+                <button
+                  className="statbtn btn-failed"
+                  onClick={() => {
+                    updateDayStatus(index, "Failed");
+                    setSelectedIndex(-1);
+                  }}
+                >
+                  Failure
+                </button>
+                <button
+                  className="statbtn btn-clear"
+                  onClick={() => {
+                    updateDayStatus(index, "neutral");
+                    setSelectedIndex(-1);
+                  }}
+                >
+                  Clear
+                </button>
+              </div>
+            )}
+          </>
+        ))}
       </div>
     </div>
   );

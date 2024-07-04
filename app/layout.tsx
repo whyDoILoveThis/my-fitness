@@ -24,7 +24,7 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html className="flex flex-col items-center" lang="en">
+      <html className="flex flex-col items-center justify-center" lang="en">
         <SignedOut>
           <body
             className={`max-w-[500px] flex flex-col justify-center items-center h-screen ${inter.className}`}
@@ -36,14 +36,14 @@ export default function RootLayout({
           </body>
         </SignedOut>
         <SignedIn>
-          <body className={`max-w-[500px] ${inter.className}`}>
-            <main>
-              <div className=" flex flex-col items-center justify-center gap-2 border p-2 mt-2 rounded-xl border-white border-opacity-20 bg-black bg-opacity-15">
-                <UserButton />
-                <Nav />
-              </div>
-              {children}{" "}
-            </main>
+          <body
+            className={`max-w-[500px] flex flex-col items-center ${inter.className}`}
+          >
+            <div className="fixed flex flex-col items-center gap-2 border p-2 mt-2 rounded-xl border-white border-opacity-20 bg-black bg-opacity-10 bg-blur">
+              <UserButton />
+              <Nav />
+            </div>
+            <div className=" pt-28">{children} </div>
           </body>
         </SignedIn>
       </html>

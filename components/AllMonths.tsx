@@ -16,9 +16,9 @@ import { useUser } from "@clerk/nextjs";
 type DayStatus =
   | "neutral"
   | "neutral current-day"
-  | "successful"
-  | "mediocre"
-  | "failed";
+  | "Success"
+  | "Mediocre"
+  | "Failed";
 
 interface MonthData {
   id: string;
@@ -33,6 +33,7 @@ const AllMonths: React.FC = () => {
   const [days, setDays] = useState<DayStatus[]>([]);
   const [currentDayIndex, setCurrentDayIndex] = useState<number>(-1); // State to track current day index
   const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const [selectedIndex, setSelectedIndex] = useState(-1);
   const currentMonth = new Date().toLocaleString("default", { month: "long" });
   const year = new Date().getFullYear();
   const docId = `${currentMonth}-${year}`;
@@ -66,10 +67,8 @@ const AllMonths: React.FC = () => {
       }
     };
 
-    const fetchPastMonths = async () => {
-      const querySnapshot = await getDocs(
-        collection(db, `habits-${userId}`)
-      );
+    const fetchMonths = async () => {
+      const querySnapshot = await getDocs(collection(db, `habits-${userId}`));
       const monthsData: MonthData[] = [];
       querySnapshot.forEach((doc) => {
         const data = doc.data().days as DayStatus[];
@@ -77,13 +76,15 @@ const AllMonths: React.FC = () => {
       });
       setPastMonths(monthsData);
     };
-
     fetchCurrentMonth();
-    fetchPastMonths();
+    fetchMonths();
   }, [docId, year]);
 
-  const updateDayStatus = async (index: number, status: DayStatus) => {
-    if (!currentMonthData) return;
+  const updateCurrentDayStatus = async (index: number, status: DayStatus) => {
+    if (!currentMonthData) {
+      console.log("err no currentmonthdata");
+      return;
+    }
 
     const newDays = [...currentMonthData.days];
     newDays[index] = status;
@@ -93,27 +94,118 @@ const AllMonths: React.FC = () => {
     await updateDoc(docRef, { days: newDays });
   };
 
+  const updatePastDayStatus = async (
+    data: MonthData,
+    index: number,
+    status: DayStatus
+  ) => {
+    if (!data) {
+      console.log("err no currentmonthdata");
+      return;
+    }
+
+    const newDays = [...data.days];
+    newDays[index] = status;
+    setCurrentMonthData({ ...data, days: newDays });
+
+    const docRef = doc(db, `habits-${userId}`, data.id);
+    await updateDoc(docRef, { days: newDays });
+  };
+
   const renderCalendar = (monthData: MonthData) => {
-    const firstDayOfWeek = new Date(year, new Date().getMonth(), 1).getDay();
+    const [month, year] = monthData.id.split("-");
+    const monthIndex = new Date(`${month} 1, ${year}`).getMonth();
+    const firstDayOfWeek = new Date(parseInt(year), monthIndex, 1).getDay();
     const leadingEmptyDays = Array.from({ length: firstDayOfWeek }, () => "");
+
+    console.log(currentMonth);
 
     return (
       <div className="month-card">
         <h3 className="text-center">{monthData.id}</h3>
         <div className="calendar">
-          {daysOfWeek.map((day) => (
-            <div key={day} className="text-center">
-              {day}
-            </div>
-          ))}
           {leadingEmptyDays.map((_, index) => (
             <div key={`empty-${index}`} className="calendar-day empty"></div>
           ))}
-          {monthData.days.map((status, index) => (
-            <div key={index} className={`day small ${status}`}>
-              <span>{index + 1}</span>
-            </div>
-          ))}
+          {monthData.days.map((status, index) => {
+            const isCurrentMonth = docId === monthData.id && true;
+            console.log(isCurrentMonth);
+
+            return (
+              <>
+                <div
+                  key={index}
+                  className={`day small cursor-pointer ${status} ${
+                    index === currentDayIndex && docId === monthData.id
+                      ? "current-day"
+                      : ""
+                  }`}
+                  onClick={() => {
+                    setSelectedIndex(index);
+                  }}
+                >
+                  <span className="flex justify-center items-center">
+                    {index + 1}
+                  </span>
+                </div>
+                {selectedIndex === index && (
+                  <div className="buttons">
+                    <button
+                      className="btn-cancel"
+                      onClick={() => setSelectedIndex(9999)}
+                    >
+                      x
+                    </button>
+                    <p className="text-2xl mb-4">Day {index + 1}</p>
+                    <button
+                      className="btn btn-success"
+                      onClick={() => {
+                        isCurrentMonth
+                          ? updateCurrentDayStatus(index, "Success")
+                          : updatePastDayStatus(monthData, index, "Success");
+                        setSelectedIndex(-1);
+                      }}
+                    >
+                      Success
+                    </button>
+                    <button
+                      className="btn btn-mediocre"
+                      onClick={() => {
+                        isCurrentMonth
+                          ? updateCurrentDayStatus(index, "Mediocre")
+                          : updatePastDayStatus(monthData, index, "Mediocre");
+                        setSelectedIndex(-1);
+                      }}
+                    >
+                      Mediocre
+                    </button>
+                    <button
+                      className="btn btn-failed"
+                      onClick={() => {
+                        isCurrentMonth
+                          ? updateCurrentDayStatus(index, "Failed")
+                          : updatePastDayStatus(monthData, index, "Failed");
+                        setSelectedIndex(-1);
+                      }}
+                    >
+                      Failure
+                    </button>
+                    <button
+                      className="btn btn-clear"
+                      onClick={() => {
+                        isCurrentMonth
+                          ? updateCurrentDayStatus(index, "neutral")
+                          : updatePastDayStatus(monthData, index, "neutral");
+                        setSelectedIndex(-1);
+                      }}
+                    >
+                      Clear
+                    </button>
+                  </div>
+                )}
+              </>
+            );
+          })}
         </div>
       </div>
     );
@@ -125,7 +217,7 @@ const AllMonths: React.FC = () => {
       <div className="past-months-grid">
         {pastMonths.map((month) => (
           <React.Fragment key={month.id}>
-            {renderCalendar(month)}
+            {docId !== month.id && renderCalendar(month)}
           </React.Fragment>
         ))}
       </div>

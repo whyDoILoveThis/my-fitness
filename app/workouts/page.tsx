@@ -40,6 +40,33 @@ const WorkoutsPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [workoutsLoading, setWorkoutsLoading] = useState(false);
   const { userId } = useAuth();
+  const [saving, setSaving] = useState(false);
+  const [tryDeleteWorkout, setTryDeleteWorkout] = useState<boolean[]>([]);
+  const [tryDeleteWorkoutList, setTryDeleteWorkoutList] = useState<boolean[]>(
+    []
+  );
+
+  function handleTryDeleteWorkout(value: boolean, index: number) {
+    if (workouts !== null) {
+      let outs: boolean[] = [];
+      workouts.map(() => {
+        outs.push(false);
+        outs[index] = value;
+        setTryDeleteWorkout([...outs]);
+      });
+    }
+  }
+
+  function handleTryDeleteWorkoutList(value: boolean, index: number) {
+    if (savedWorkouts !== null) {
+      let outs: boolean[] = [];
+      savedWorkouts.map(() => {
+        outs.push(false);
+        outs[index] = value;
+        setTryDeleteWorkoutList([...outs]);
+      });
+    }
+  }
 
   useEffect(() => {
     const fetchWorkouts = async () => {
@@ -54,7 +81,7 @@ const WorkoutsPage: React.FC = () => {
 
     fetchWorkouts();
     fetchSavedWorkouts();
-  }, [db, userId]);
+  }, [db, userId, saving]);
 
   const fetchSavedWorkouts = async () => {
     const q = query(
@@ -143,12 +170,29 @@ const WorkoutsPage: React.FC = () => {
     setWorkouts(workouts.filter((workout) => workout.id !== id));
   };
 
+  const handleDeleteWorkout = async (savedWorkoutId: string, index: number) => {
+    console.log("deleting");
+
+    setLoading(true);
+
+    savedWorkouts.map((saved) => {
+      if (saved.id === savedWorkoutId) {
+        const docRef = doc(db, `saved-workouts-${userId}`, saved.id);
+        deleteDoc(docRef);
+      }
+    });
+    setSaving(!saving);
+  };
+
   if (loading) {
-    return <div>Loading...</div>;
+    return <Loader />;
   } else
     return (
-      <div>
+      <>
         <h1 className="my-4 text-4xl text-center">💪🏽 Workouts</h1>
+        {workouts.length === 0 && (
+          <p className="mb-4 text-sm text-center">Let's add some workouts!😁</p>
+        )}
         <div className="flex items-center justify-center gap-2 mb-6">
           <input
             className=" bg-white  bg-opacity-5 rounded-full p-2 pl-4 "
@@ -165,12 +209,12 @@ const WorkoutsPage: React.FC = () => {
           </button>
         </div>
         <div className="workouts-list">
-          {workouts && (
+          {workouts.length > 0 && (
             <div className="flex gap-[75px] ml-14">
               <p>Name</p> <p>Reps done</p>
             </div>
           )}
-          {workouts.map((workout) => (
+          {workouts.map((workout, index) => (
             <div
               key={workout.id}
               className="flex justify-evenly items-center gap-4 p-4 border border-white border-opacity-30 bg-black bg-opacity-30 rounded-2xl mb-4"
@@ -189,32 +233,113 @@ const WorkoutsPage: React.FC = () => {
                   <button onClick={() => updateReps(workout.id, -1)}>-</button>
                 </div>
                 <button
-                  className="btn-failed border border-red-400 p-2 py-0 rounded-full"
-                  onClick={() => deleteWorkout(workout.id)}
+                  className="btn btn-failed"
+                  onClick={() => handleTryDeleteWorkout(true, index)}
                 >
                   Delete
                 </button>
+                {tryDeleteWorkout[index] && (
+                  <article className="bg-popover flex flex-col gap-6 items-center justify-center">
+                    <p>
+                      <span className=" text-red-300">DELETING:</span>{" "}
+                      {workout.name} - {workout.reps}
+                    </p>
+                    <h2 className=" text-xl text-blue-100">
+                      This action is NOT reversable!!
+                    </h2>
+                    <div className="flex gap-6">
+                      <button
+                        onClick={() => {
+                          handleTryDeleteWorkout(false, index);
+                        }}
+                        className="btn btn-failed w-fit"
+                      >
+                        NO!
+                      </button>
+                      <button
+                        onClick={() => {
+                          deleteWorkout(workout.id);
+                          handleTryDeleteWorkout(false, index);
+                        }}
+                        className="btn btn-success w-fit"
+                      >
+                        Goodbye!
+                      </button>
+                    </div>
+                  </article>
+                )}
               </div>
             </div>
           ))}
         </div>
-        <button
-          className=" bg-green-500 bg-opacity-25 rounded-full p-1 px-3 mb-20 border border-green-400 text-green-300"
-          onClick={saveWorkouts}
-        >
-          Save Workouts
-        </button>
+        {workouts.length > 0 && (
+          <button
+            className=" bg-green-500 bg-opacity-25 rounded-full p-1 px-3 mb-20 border border-green-400 text-green-300"
+            onClick={saveWorkouts}
+          >
+            Save Workouts
+          </button>
+        )}
 
-        <h2 className="text-2xl text-center">📁 Saved Workouts</h2>
+        {saveWorkouts.length > 0 && (
+          <h2 className="text-2xl text-center">📁 Saved Workouts</h2>
+        )}
         {workoutsLoading ? (
           <Loader />
         ) : (
           <ul>
-            {savedWorkouts.map((saved) => (
+            {savedWorkouts.map((saved, index) => (
               <li
                 className="bg-black bg-opacity-30 border border-white border-opacity-25 p-4 mb-4 rounded-2xl"
                 key={saved.id}
               >
+                <button
+                  className="ml-4 btn btn-failed"
+                  onClick={() => {
+                    handleTryDeleteWorkoutList(true, index);
+                  }}
+                >
+                  Delete
+                </button>
+                {tryDeleteWorkoutList[index] && (
+                  <article className="bg-popover flex flex-col gap-6 items-center justify-center">
+                    <div className="border rounded-xl bg-black bg-opacity-25 p-4 pr-14">
+                      <span className=" text-red-300 font-bold">DELETING</span>{" "}
+                      <ul>
+                        <p className=" text-xl">
+                          {saved.date.toLocaleDateString()}
+                        </p>
+                        {saved.workouts.map((workout, index) => (
+                          <li key={index}>
+                            <b>{workout.name}</b> - {workout.reps}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <h2 className=" text-xl text-blue-100">
+                      This action is NOT reversable!!
+                    </h2>
+                    <div className="flex gap-6">
+                      <button
+                        onClick={() => {
+                          handleTryDeleteWorkoutList(false, index);
+                        }}
+                        className="btn btn-failed w-fit"
+                      >
+                        NO!
+                      </button>
+                      <button
+                        onClick={() => {
+                          handleDeleteWorkout(saved.id, index);
+                          handleTryDeleteWorkoutList(false, index);
+                        }}
+                        className="btn btn-success w-fit"
+                      >
+                        Goodbye!
+                      </button>
+                    </div>
+                  </article>
+                )}
                 <p className="text-2xl text-center mb-4">
                   {" "}
                   {saved.date.toLocaleDateString()}
@@ -230,7 +355,7 @@ const WorkoutsPage: React.FC = () => {
             ))}
           </ul>
         )}
-      </div>
+      </>
     );
 };
 
