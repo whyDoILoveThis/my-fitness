@@ -227,10 +227,20 @@ const WorkoutsPage: React.FC = () => {
               <div className="w-[1px] h-6 bg-white bg-opacity-25"></div>
 
               <div className="workout-buttons">
-                <div className="border border-white border-opacity-25 rounded-2xl flex gap-4 p-3 py-0 mr-2">
-                  <button onClick={() => updateReps(workout.id, 1)}>+</button>
+                <div className="border border-white border-opacity-25 rounded-2xl flex mr-2">
+                  <button
+                    className="w-[40px]"
+                    onClick={() => updateReps(workout.id, 1)}
+                  >
+                    +
+                  </button>
                   <div className="w-[1px] h-full bg-white bg-opacity-25"></div>
-                  <button onClick={() => updateReps(workout.id, -1)}>-</button>
+                  <button
+                    className="w-[40px]"
+                    onClick={() => updateReps(workout.id, -1)}
+                  >
+                    -
+                  </button>
                 </div>
                 <button
                   className="btn btn-failed"

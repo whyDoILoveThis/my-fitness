@@ -38,7 +38,7 @@ export default function Home() {
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists()) {
-        const existingGoals = docSnap.data().goalsa || [];
+        const existingGoals = docSnap.data().goals || [];
         await setDoc(docRef, { goals: [...existingGoals, value] });
       } else {
         await setDoc(docRef, { goals: [value] });
@@ -62,32 +62,38 @@ export default function Home() {
   };
 
   useEffect(() => {
-    async function readGoalData() {
-      try {
-        console.log("💨fetching", doneModifyingGoals);
-
-        const docRef = doc(db, `goals-${userId}-${docId}`, docId);
-        const docSnap = await getDoc(docRef);
-
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          console.log("Goal data:", data);
-
-          setCurrentMonthGoals(data?.goals ?? []);
-        } else {
-          console.log("No such document!");
-          setCurrentMonthGoals([]);
-        }
-      } catch (error) {
-        console.error("Error reading goal data:", error);
-        setCurrentMonthGoals([]);
-      }
-    }
-
     if (userId) {
       readGoalData();
     }
-  }, [userId, docId, !doneModifyingGoals]);
+  }, [userId, docId]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      readGoalData();
+    }, 1000);
+  }, [doneModifyingGoals]);
+
+  async function readGoalData() {
+    try {
+      console.log("💨fetching", doneModifyingGoals);
+
+      const docRef = doc(db, `goals-${userId}-${docId}`, docId);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        console.log("Goal data:", data);
+
+        setCurrentMonthGoals(data?.goals ?? []);
+      } else {
+        console.log("No such document!");
+        setCurrentMonthGoals([]);
+      }
+    } catch (error) {
+      console.error("Error reading goal data:", error);
+      setCurrentMonthGoals([]);
+    }
+  }
 
   return (
     <div className="app mt-4">

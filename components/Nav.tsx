@@ -3,7 +3,7 @@ import React from "react";
 
 const Nav = () => {
   return (
-    <div className="z-50 flex gap-3 items-center justify-center">
+    <div className="z-50 flex gap-4 items-center justify-center">
       <Link className=" link" href="/habit-tracker">
         Calendar
       </Link>
