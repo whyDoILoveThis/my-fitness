@@ -71,6 +71,16 @@ font-size: 16px;
   background-color: #ff001950;
 }
 
+.Success-goal {
+  background-color: #47ff474a;
+  border: 1px solid #00ff00;
+}
+
+.Failed-goal {
+  background-color: rgba(254, 62, 62, 0.326);
+  border: 1px solid rgba(255, 36, 36, 0.656);
+}
+
 .buttons {
   z-index: 999;
   font-size: 18px;
@@ -91,8 +101,13 @@ font-size: 16px;
 .btn {
   border-radius: 999px;
   margin: 2px;
-  padding: 0 5px;
-  border: 1px solid;
+  padding: 0 7px;
+  border: 1px solid #ffffff89;
+  color: rgba(255, 255, 255, 0.882);
+}
+
+.btn:hover {
+  filter: brightness(80%); /* Darkens the color */
 }
 
 .statbtn {
@@ -139,8 +154,7 @@ font-size: 16px;
 }
 
 .btn-success {
-  background-color: rgba(0, 255, 0, 0.249);
-  color: rgb(117, 250, 117);
+  @apply  bg-green-500 bg-opacity-25 border border-green-400 text-green-300
 }
 
 .btn-mediocre {

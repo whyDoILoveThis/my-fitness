@@ -12,6 +12,7 @@ import {
 import "../styles/Calendar.css"; // Import global CSS
 import { useAuth } from "@clerk/nextjs";
 import { useUser } from "@clerk/nextjs";
+import RenderCalender from "./RenderCalender";
 
 type DayStatus =
   | "neutral"
@@ -23,6 +24,12 @@ type DayStatus =
 interface MonthData {
   id: string;
   days: DayStatus[];
+}
+
+// Define the type for a goal
+interface Goal {
+  text: string;
+  status: "neutral" | "Success" | "Failed";
 }
 
 const AllMonths: React.FC = () => {
@@ -38,6 +45,7 @@ const AllMonths: React.FC = () => {
   const year = new Date().getFullYear();
   const docId = `${currentMonth}-${year}`;
   const { userId } = useAuth();
+  const [goals, setGoals] = useState([]);
 
   useEffect(() => {
     const daysInMonth = new Date(year, new Date().getMonth() + 1, 0).getDate();
@@ -112,112 +120,33 @@ const AllMonths: React.FC = () => {
     await updateDoc(docRef, { days: newDays });
   };
 
-  const renderCalendar = (monthData: MonthData) => {
-    const [month, year] = monthData.id.split("-");
-    const monthIndex = new Date(`${month} 1, ${year}`).getMonth();
-    const firstDayOfWeek = new Date(parseInt(year), monthIndex, 1).getDay();
-    const leadingEmptyDays = Array.from({ length: firstDayOfWeek }, () => "");
-
-    console.log(currentMonth);
-
-    return (
-      <div className="month-card">
-        <h3 className="text-center">{monthData.id}</h3>
-        <div className="calendar">
-          {leadingEmptyDays.map((_, index) => (
-            <div key={`empty-${index}`} className="calendar-day empty"></div>
-          ))}
-          {monthData.days.map((status, index) => {
-            const isCurrentMonth = docId === monthData.id && true;
-            console.log(isCurrentMonth);
-
-            return (
-              <>
-                <div
-                  key={index}
-                  className={`day small cursor-pointer ${status} ${
-                    index === currentDayIndex && docId === monthData.id
-                      ? "current-day"
-                      : ""
-                  }`}
-                  onClick={() => {
-                    setSelectedIndex(index);
-                  }}
-                >
-                  <span className="flex justify-center items-center">
-                    {index + 1}
-                  </span>
-                </div>
-                {selectedIndex === index && (
-                  <div className="buttons">
-                    <button
-                      className="btn-cancel"
-                      onClick={() => setSelectedIndex(9999)}
-                    >
-                      x
-                    </button>
-                    <p className="text-2xl mb-4">Day {index + 1}</p>
-                    <button
-                      className="btn btn-success"
-                      onClick={() => {
-                        isCurrentMonth
-                          ? updateCurrentDayStatus(index, "Success")
-                          : updatePastDayStatus(monthData, index, "Success");
-                        setSelectedIndex(-1);
-                      }}
-                    >
-                      Success
-                    </button>
-                    <button
-                      className="btn btn-mediocre"
-                      onClick={() => {
-                        isCurrentMonth
-                          ? updateCurrentDayStatus(index, "Mediocre")
-                          : updatePastDayStatus(monthData, index, "Mediocre");
-                        setSelectedIndex(-1);
-                      }}
-                    >
-                      Mediocre
-                    </button>
-                    <button
-                      className="btn btn-failed"
-                      onClick={() => {
-                        isCurrentMonth
-                          ? updateCurrentDayStatus(index, "Failed")
-                          : updatePastDayStatus(monthData, index, "Failed");
-                        setSelectedIndex(-1);
-                      }}
-                    >
-                      Failure
-                    </button>
-                    <button
-                      className="btn btn-clear"
-                      onClick={() => {
-                        isCurrentMonth
-                          ? updateCurrentDayStatus(index, "neutral")
-                          : updatePastDayStatus(monthData, index, "neutral");
-                        setSelectedIndex(-1);
-                      }}
-                    >
-                      Clear
-                    </button>
-                  </div>
-                )}
-              </>
-            );
-          })}
-        </div>
-      </div>
-    );
-  };
-
   return (
     <div className="all-months ml-2 text-base">
-      {currentMonthData && renderCalendar(currentMonthData)}
+      {currentMonthData && (
+        <RenderCalender
+          monthData={currentMonthData}
+          docId={docId}
+          currentDayIndex={currentDayIndex}
+          selectedIndex={selectedIndex}
+          setSelectedIndex={setSelectedIndex}
+          updateCurrentDayStatus={updateCurrentDayStatus}
+          updatePastDayStatus={updatePastDayStatus}
+        />
+      )}
       <div className="past-months-grid">
         {pastMonths.map((month) => (
           <React.Fragment key={month.id}>
-            {docId !== month.id && renderCalendar(month)}
+            {docId !== month.id && (
+              <RenderCalender
+                monthData={month}
+                docId={docId}
+                currentDayIndex={currentDayIndex}
+                selectedIndex={selectedIndex}
+                setSelectedIndex={setSelectedIndex}
+                updateCurrentDayStatus={updateCurrentDayStatus}
+                updatePastDayStatus={updatePastDayStatus}
+              />
+            )}
           </React.Fragment>
         ))}
       </div>

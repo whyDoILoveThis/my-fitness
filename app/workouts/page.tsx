@@ -16,9 +16,7 @@ import {
 } from "firebase/firestore";
 import "../../styles/Calendar.css";
 import "../../styles/Workouts.css";
-import Nav from "@/components/Nav";
 import { useAuth } from "@clerk/nextjs";
-import Webcam from "@/components/Webcam";
 import Loader from "@/components/Loader";
 
 interface Workout {
@@ -45,6 +43,7 @@ const WorkoutsPage: React.FC = () => {
   const [tryDeleteWorkoutList, setTryDeleteWorkoutList] = useState<boolean[]>(
     []
   );
+  const [showEditWorkouts, setShowEditWorkouts] = useState(false);
 
   function handleTryDeleteWorkout(value: boolean, index: number) {
     if (workouts !== null) {
@@ -151,9 +150,31 @@ const WorkoutsPage: React.FC = () => {
     setWorkoutsLoading(false);
   };
 
-  const updateReps = async (id: string, delta: number) => {
+  const updateReps = async (id: string, name: string, delta: number) => {
     const workout = workouts.find((workout) => workout.id === id);
-    if (workout) {
+    if (name === "Pushups" || name === "pushups") {
+      if (workout) {
+        const newReps = workout.reps + delta * 5;
+        if (newReps < 0) return;
+        await updateDoc(doc(db, `workouts-${userId}`, id), { reps: newReps });
+        setWorkouts(
+          workouts.map((workout) =>
+            workout.id === id ? { ...workout, reps: newReps } : workout
+          )
+        );
+      }
+    } else if (name === "Laps" || name === "laps") {
+      if (workout) {
+        const newReps = workout.reps + delta;
+        if (newReps < 0) return;
+        await updateDoc(doc(db, `workouts-${userId}`, id), { reps: newReps });
+        setWorkouts(
+          workouts.map((workout) =>
+            workout.id === id ? { ...workout, reps: newReps } : workout
+          )
+        );
+      }
+    } else if (workout) {
       const newReps = workout.reps + delta;
       if (newReps < 0) return;
       await updateDoc(doc(db, `workouts-${userId}`, id), { reps: newReps });
@@ -188,12 +209,12 @@ const WorkoutsPage: React.FC = () => {
     return <Loader />;
   } else
     return (
-      <>
+      <div>
         <h1 className="my-4 text-4xl text-center">💪🏽 Workouts</h1>
         {workouts.length === 0 && (
           <p className="mb-4 text-sm text-center">Let's add some workouts!😁</p>
         )}
-        <div className="flex items-center justify-center gap-2 mb-6">
+        <div className="flex relative items-center justify-center gap-2 mb-6">
           <input
             className=" bg-white  bg-opacity-5 rounded-full p-2 pl-4 "
             type="text"
@@ -230,24 +251,26 @@ const WorkoutsPage: React.FC = () => {
                 <div className="border border-white border-opacity-25 rounded-2xl flex mr-2">
                   <button
                     className="w-[40px]"
-                    onClick={() => updateReps(workout.id, 1)}
+                    onClick={() => updateReps(workout.id, workout.name, 1)}
                   >
                     +
                   </button>
                   <div className="w-[1px] h-full bg-white bg-opacity-25"></div>
                   <button
                     className="w-[40px]"
-                    onClick={() => updateReps(workout.id, -1)}
+                    onClick={() => updateReps(workout.id, workout.name, -1)}
                   >
                     -
                   </button>
                 </div>
-                <button
-                  className="btn btn-failed"
-                  onClick={() => handleTryDeleteWorkout(true, index)}
-                >
-                  Delete
-                </button>
+                {showEditWorkouts && (
+                  <button
+                    className="btn btn-failed"
+                    onClick={() => handleTryDeleteWorkout(true, index)}
+                  >
+                    Delete
+                  </button>
+                )}
                 {tryDeleteWorkout[index] && (
                   <article className="bg-popover flex flex-col gap-6 items-center justify-center">
                     <p>
@@ -283,12 +306,19 @@ const WorkoutsPage: React.FC = () => {
           ))}
         </div>
         {workouts.length > 0 && (
-          <button
-            className=" bg-green-500 bg-opacity-25 rounded-full p-1 px-3 mb-20 border border-green-400 text-green-300"
-            onClick={saveWorkouts}
-          >
-            Save Workouts
-          </button>
+          <div className="flex items-center gap-4 mb-4">
+            <button className="link btn-success" onClick={saveWorkouts}>
+              Save Workouts
+            </button>
+            <button
+              className="link h-fit"
+              onClick={() => {
+                setShowEditWorkouts(!showEditWorkouts);
+              }}
+            >
+              {!showEditWorkouts ? "Edit" : "Cancel"}
+            </button>
+          </div>
         )}
 
         {saveWorkouts.length > 0 && (
@@ -303,14 +333,16 @@ const WorkoutsPage: React.FC = () => {
                 className="bg-black bg-opacity-30 border border-white border-opacity-25 p-4 mb-4 rounded-2xl"
                 key={saved.id}
               >
-                <button
-                  className="ml-4 btn btn-failed"
-                  onClick={() => {
-                    handleTryDeleteWorkoutList(true, index);
-                  }}
-                >
-                  Delete
-                </button>
+                {showEditWorkouts && (
+                  <button
+                    className="ml-4 btn btn-failed"
+                    onClick={() => {
+                      handleTryDeleteWorkoutList(true, index);
+                    }}
+                  >
+                    Delete
+                  </button>
+                )}
                 {tryDeleteWorkoutList[index] && (
                   <article className="bg-popover flex flex-col gap-6 items-center justify-center">
                     <div className="border rounded-xl bg-black bg-opacity-25 p-4 pr-14">
@@ -365,7 +397,7 @@ const WorkoutsPage: React.FC = () => {
             ))}
           </ul>
         )}
-      </>
+      </div>
     );
 };
 
