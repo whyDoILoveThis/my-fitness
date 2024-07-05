@@ -30,3 +30,8 @@ html {
 .bg-popover {
   @apply fixed top-0 left-0 w-full h-full bg-black bg-opacity-5 bg-blur
 }
+
+.btn-blue {
+  background-color: rgba(0, 0, 255, 0.248);
+  border-color: rgb(71, 71, 248);
+}

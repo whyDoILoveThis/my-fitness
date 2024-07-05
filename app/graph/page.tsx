@@ -105,7 +105,7 @@ const AllMonthsPage: React.FC = () => {
             key={month.id}
             className="progress-chart flex flex-col items-center justify-center p-6 m-4 border border-slate-600 bg-slate-400 bg-opacity-5 rounded-2xl"
           >
-            <h3>{month.id}</h3>
+            <h3 className="font-extrabold text-2xl">{month.id}</h3>
             {selected === 1 ? (
               <ProgressChart data={month.days} />
             ) : (

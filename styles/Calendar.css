@@ -166,6 +166,7 @@ font-size: 16px;
 .btn-failed {
   background-color: rgba(255, 0, 0, 0.259);
   color: rgb(252, 143, 143);
+  border-color: rgb(255, 95, 95);
 }
 
 .all-months {

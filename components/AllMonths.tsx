@@ -45,7 +45,7 @@ const AllMonths: React.FC = () => {
   const year = new Date().getFullYear();
   const docId = `${currentMonth}-${year}`;
   const { userId } = useAuth();
-  const [goals, setGoals] = useState([]);
+  const [showGoals, setShowGoals] = useState(false);
 
   useEffect(() => {
     const daysInMonth = new Date(year, new Date().getMonth() + 1, 0).getDate();
@@ -121,36 +121,62 @@ const AllMonths: React.FC = () => {
   };
 
   return (
-    <div className="all-months ml-2 text-base">
-      {currentMonthData && (
-        <RenderCalender
-          monthData={currentMonthData}
-          docId={docId}
-          currentDayIndex={currentDayIndex}
-          selectedIndex={selectedIndex}
-          setSelectedIndex={setSelectedIndex}
-          updateCurrentDayStatus={updateCurrentDayStatus}
-          updatePastDayStatus={updatePastDayStatus}
-        />
-      )}
-      <div className="past-months-grid">
-        {pastMonths.map((month) => (
-          <React.Fragment key={month.id}>
-            {docId !== month.id && (
-              <RenderCalender
-                monthData={month}
-                docId={docId}
-                currentDayIndex={currentDayIndex}
-                selectedIndex={selectedIndex}
-                setSelectedIndex={setSelectedIndex}
-                updateCurrentDayStatus={updateCurrentDayStatus}
-                updatePastDayStatus={updatePastDayStatus}
-              />
-            )}
-          </React.Fragment>
-        ))}
+    <>
+      <div className="flex gap-2 mb-6">
+        <button
+          className="link"
+          onClick={() => {
+            setShowGoals(false);
+          }}
+        >
+          Habits
+        </button>
+        <button
+          className="link"
+          onClick={() => {
+            setShowGoals(true);
+          }}
+        >
+          Goals
+        </button>
       </div>
-    </div>
+      <h2 className="font-semibold text-3xl">
+        {showGoals ? "Goals" : "Habits"}
+      </h2>
+
+      <div className="all-months ml-2 text-base">
+        {currentMonthData && (
+          <RenderCalender
+            monthData={currentMonthData}
+            docId={docId}
+            currentDayIndex={currentDayIndex}
+            selectedIndex={selectedIndex}
+            setSelectedIndex={setSelectedIndex}
+            updateCurrentDayStatus={updateCurrentDayStatus}
+            updatePastDayStatus={updatePastDayStatus}
+            showGoals={showGoals}
+          />
+        )}
+        <div className="past-months-grid">
+          {pastMonths.map((month) => (
+            <React.Fragment key={month.id}>
+              {docId !== month.id && (
+                <RenderCalender
+                  monthData={month}
+                  docId={docId}
+                  currentDayIndex={currentDayIndex}
+                  selectedIndex={selectedIndex}
+                  setSelectedIndex={setSelectedIndex}
+                  updateCurrentDayStatus={updateCurrentDayStatus}
+                  updatePastDayStatus={updatePastDayStatus}
+                  showGoals={showGoals}
+                />
+              )}
+            </React.Fragment>
+          ))}
+        </div>
+      </div>
+    </>
   );
 };
 

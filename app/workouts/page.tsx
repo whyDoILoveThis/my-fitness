@@ -152,7 +152,17 @@ const WorkoutsPage: React.FC = () => {
 
   const updateReps = async (id: string, name: string, delta: number) => {
     const workout = workouts.find((workout) => workout.id === id);
-    if (name === "Pushups" || name === "pushups") {
+    const validExercises = new Set([
+      "pushups",
+      "dumbell curls",
+      "dumbell tris",
+      "situps",
+    ]);
+
+    // Normalize the input name
+    const normalizedName = name.toLowerCase();
+
+    if (validExercises.has(normalizedName)) {
       if (workout) {
         const newReps = workout.reps + delta * 5;
         if (newReps < 0) return;
@@ -214,9 +224,9 @@ const WorkoutsPage: React.FC = () => {
         {workouts.length === 0 && (
           <p className="mb-4 text-sm text-center">Let's add some workouts!😁</p>
         )}
-        <div className="flex relative items-center justify-center gap-2 mb-6">
+        <div className="flex items-center justify-center gap-2 mb-6">
           <input
-            className=" bg-white  bg-opacity-5 rounded-full p-2 pl-4 "
+            className=" bg-white bg-opacity-5 rounded-full p-2 pl-4 "
             type="text"
             value={workoutName}
             onChange={(e) => setWorkoutName(e.target.value)}
@@ -248,16 +258,16 @@ const WorkoutsPage: React.FC = () => {
               <div className="w-[1px] h-6 bg-white bg-opacity-25"></div>
 
               <div className="workout-buttons">
-                <div className="border border-white border-opacity-25 rounded-2xl flex mr-2">
+                <div className=" bg-white bg-opacity-10 border border-white border-opacity-25 rounded-2xl flex mr-2">
                   <button
-                    className="w-[40px]"
+                    className="w-[40px] font-extrabold"
                     onClick={() => updateReps(workout.id, workout.name, 1)}
                   >
                     +
                   </button>
                   <div className="w-[1px] h-full bg-white bg-opacity-25"></div>
                   <button
-                    className="w-[40px]"
+                    className="w-[40px] font-extrabold"
                     onClick={() => updateReps(workout.id, workout.name, -1)}
                   >
                     -

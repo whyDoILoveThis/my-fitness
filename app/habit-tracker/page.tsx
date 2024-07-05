@@ -182,7 +182,7 @@ export default function Home() {
                                   : "Success"
                               )
                             }
-                            className="btn btn-success"
+                            className="border rounded-full border-green-300 btn-success px-[6px]"
                           >
                             {data.status === "Success" ? "✔" : "Success"}
                           </button>
